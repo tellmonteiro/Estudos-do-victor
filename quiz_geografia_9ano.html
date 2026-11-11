@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz de Geografia 9º ano – Europa e Oriente Médio</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--ink:#1f2328;--quiet:#5b6169;--line:#d9d6cc;--accent:#2563eb;--accent-bg:#e8f0fe;--ok:#15803d;--ok-bg:#e6f4ea;--bad:#b91c1c;--bad-bg:#fdecec;--warn-bg:#fff6dd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 64px}
+h1{font-size:26px;margin:8px 0 4px}
+h2{font-size:22px;margin:0 0 12px}
+p{margin:8px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin:14px 0}
+.quiet{color:var(--quiet);font-size:15px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:12px;padding:14px 20px;background:var(--accent);color:#fff;cursor:pointer;width:100%;margin-top:10px}
+.btn.alt{background:#fff;color:var(--accent);border:2px solid var(--accent)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.top{display:flex;justify-content:space-between;align-items:center;font-size:15px;color:var(--quiet)}
+.bar{height:10px;background:#e4e1d8;border-radius:99px;overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.tag{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:var(--accent-bg);color:var(--accent);padding:3px 10px;border-radius:99px}
+.q{font-size:21px;font-weight:600;margin:12px 0 14px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;font:inherit;background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px;margin:10px 0;cursor:pointer}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt b{flex:0 0 28px;height:28px;border-radius:50%;background:#efede5;display:flex;align-items:center;justify-content:center;font-size:15px}
+.opt.ok{border-color:var(--ok);background:var(--ok-bg)}
+.opt.bad{border-color:var(--bad);background:var(--bad-bg)}
+.opt:disabled{cursor:default}
+.fb{border-radius:12px;padding:14px;margin-top:14px}
+.fb.ok{background:var(--ok-bg);border-left:6px solid var(--ok)}
+.fb.bad{background:var(--bad-bg);border-left:6px solid var(--bad)}
+.fb strong{display:block;margin-bottom:4px}
+.big{font-size:56px;font-weight:800;line-height:1;margin:6px 0}
+.row{display:flex;gap:10px}
+.row .btn{margin-top:10px}
+textarea{width:100%;min-height:150px;font:inherit;border:2px solid var(--line);border-radius:12px;padding:12px;resize:vertical}
+.model{background:var(--warn-bg);border-radius:12px;padding:14px;margin-top:12px}
+.model li{margin:6px 0}
+label.chk{display:flex;gap:10px;align-items:flex-start;margin:8px 0;cursor:pointer}
+label.chk input{width:22px;height:22px;margin-top:3px}
+.rev{border-top:1px solid var(--line);padding:12px 0}
+.rev small{color:var(--quiet)}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+// Cada questão: [tema, enunciado, [alternativa CORRETA, errada, errada, errada], explicação]
+const Q = [
+["Rússia","O que é o “exterior próximo” da Rússia?",["Os países ao redor da Rússia que já fizeram parte do Império Russo e da URSS","Os países que usam o rublo como moeda","Os países da OTAN que fazem fronteira com a Rússia","Os países que fazem parte dos BRICS"],"São os vizinhos que já foram da Rússia. Os russos ainda veem essa área como “deles”."],
+["Rússia","Por que o Mar Negro é tão importante para a Rússia?",["É onde a Rússia consegue portos que não congelam, e assim navega o ano todo","Porque ele liga a Rússia diretamente ao Oceano Pacífico","Porque é o maior mar de petróleo do mundo","Porque nele fica a fronteira com a China"],"Grave: Mar Negro = portos que nunca congelam = motivo estratégico."],
+["Rússia","Quem, na época da URSS (1922–1953), mudou povos de lugar e aumentou o número de russos nas outras repúblicas?",["Stálin","Boris Yeltsin","Nikita Kruschev","Vladimir Putin"],"Foi Stálin. Ele expulsou grupos de suas terras e levou para áreas mais pobres."],
+["Rússia","Quais países do Leste Europeu perderam a ligação com a Rússia ao entrar na União Europeia e na OTAN?",["Letônia, Estônia, Lituânia, Polônia, Hungria e Bulgária","Cazaquistão, Uzbequistão e Belarus","Chechênia, Daguestão e Geórgia","Ucrânia, Moldávia, Crimeia e Donetsk"],"Esses seis saíram da órbita russa. Os da outra lista têm minorias russas, mas não entraram na UE e na OTAN."],
+["Rússia","Quais países formam os BRICS, grupo em que a Rússia entrou no começo do século XXI?",["Brasil, Rússia, Índia, China e África do Sul","Brasil, Rússia, Irã, China e Argentina","Bulgária, Rússia, Israel, Coreia e Suécia","Brasil, Reino Unido, Índia, Chile e Suíça"],"B-R-I-C-S: Brasil, Rússia, Índia, China e África do Sul."],
+
+["Chechênia","Qual é a religião principal da Chechênia?",["Islamismo (vertente sunita)","Cristianismo ortodoxo","Catolicismo","Judaísmo"],"A Chechênia é de maioria muçulmana sunita. Os russos eram cristãos ortodoxos, e isso aumentou o choque entre as culturas."],
+["Chechênia","Por que Stálin deportou cerca de 400 mil chechenos na Segunda Guerra Mundial?",["Porque eles foram acusados de apoiar os nazistas","Porque queriam entrar na OTAN","Porque pediram ajuda aos EUA","Porque tomaram a capital Moscou"],"Os chechenos tentaram a independência e foram acusados de apoiar os nazistas. Morreram entre 100 e 200 mil."],
+["Chechênia","Como terminou a Primeira Guerra da Chechênia (1994–1996)?",["As tropas russas perderam, mas a independência não foi reconhecida","A Rússia venceu e acabou com o movimento separatista","A Chechênia virou membro da ONU","A OTAN invadiu a Chechênia"],"Yeltsin mandou tropas em 1994. A Rússia perdeu em 1996, mas nunca reconheceu a independência."],
+["Chechênia","O que aconteceu no Teatro Dubrovka, em Moscou (2002)?",["Rebeldes chechenos prenderam cerca de 750 reféns e a Rússia usou um gás","Uma bomba destruiu um prédio do governo, com 300 mortos","Putin foi sequestrado por separatistas","Uma escola foi tomada por rebeldes por 3 dias"],"Morreram 116 reféns e 50 extremistas. A tomada de uma escola por 3 dias foi Beslan, em 2004."],
+["Chechênia","Qual foi o saldo do ataque à escola de Beslan (2004)?",["Mais de 300 mortos, a maioria crianças","Nenhuma morte, só reféns libertados","Cerca de 50 mortos, todos militares","116 reféns mortos por gás"],"Mais de mil reféns ficaram 3 dias. O mundo condenou os separatistas e também a falha das autoridades russas."],
+
+["Ucrânia","Em que data Putin invadiu a Ucrânia na guerra atual?",["24 de fevereiro de 2022","1º de janeiro de 2021","6 de junho de 2023","Março de 2014"],"A invasão começou em 24/02/2022. Em março de 2014 foi a anexação da Crimeia."],
+["Ucrânia","Quem transferiu a Crimeia para a Ucrânia em 1954?",["O líder soviético Nikita Kruschev","Josef Stálin","Boris Yeltsin","Viktor Yanukovych"],"Na época da URSS isso não fez diferença. Com o fim da URSS, a Crimeia ficou com a Ucrânia independente."],
+["Ucrânia","O que o presidente Yanukovych decidiu em 2013, desencadeando protestos?",["Não assinar o acordo com a União Europeia","Entrar na OTAN","Vender a Crimeia à Rússia","Declarar guerra à Rússia"],"A parte da população que queria aproximação com a Europa foi às ruas. Em 2014 ele caiu e fugiu para a Rússia."],
+["Ucrânia","Por que a Crimeia é estratégica?",["Tem saída para o Mar Negro, portos importantes e gasodutos que levam gás russo à Europa","É a maior produtora de trigo do mundo","Fica na fronteira com a Polônia","Tem as maiores reservas de petróleo da Europa"],"Saída para o Mar Negro, portos para exportar e gasodutos: por isso a Rússia quer manter controle."],
+["Ucrânia","Em maio de 2014, separatistas proclamaram a independência de qual região do leste ucraniano?",["Donetsk","Crimeia","Kakhovka","Kiev"],"Donetsk (e Lugansk) pediam autonomia. O governo ucraniano não controlou a situação e começou uma guerra civil no leste."],
+
+["Zona do Euro","Qual tratado criou o euro, em 1992?",["Tratado de Maastricht","Tratado de Oslo","Tratado de Camp David","Tratado de Versalhes"],"Maastricht (1992) criou o euro e colocou regras para quem quisesse usar a moeda."],
+["Zona do Euro","Quais eram as regras de Maastricht para usar o euro?",["Déficit abaixo de 3% do PIB e dívida pública de no máximo 60% do PIB","Déficit de 60% e dívida de 3% do PIB","Ter petróleo e ser membro da OTAN","Ter mais de 50 milhões de habitantes"],"Déficit < 3% do PIB (gastar pouco acima do que arrecada) e dívida ≤ 60% do PIB."],
+["Zona do Euro","Onde começou a grande crise econômica de 2008 que atingiu a Europa?",["Nos Estados Unidos","Na Grécia","Na China","Na Alemanha"],"A crise explodiu nos EUA. Na Europa, os problemas de déficit e dívida já existentes ficaram bem piores."],
+["Zona do Euro","Qual país virou o maior símbolo da crise na Zona do Euro?",["Grécia","Alemanha","França","Finlândia"],"A Grécia estava na pior situação: escondia o déficit e a economia caiu cerca de 25% do PIB."],
+["Zona do Euro","O que é austeridade?",["Cortar gastos públicos: salários, aposentadorias, privatizar e demitir","Aumentar os gastos do governo para criar empregos","Sair da União Europeia","Trocar o euro por outra moeda"],"Foi o que FMI, BCE e Comissão Europeia exigiram da Grécia, e isso gerou protestos."],
+
+["Brexit","O que significa a palavra “Brexit”?",["Britain (Grã-Bretanha) + exit (saída) = saída britânica","Brasil + exportação","Britain + extension (expansão)","Bruxelas + exército"],"Brexit é a saída do Reino Unido da União Europeia."],
+["Brexit","Qual foi o resultado do referendo do Brexit em 2016?",["51,9% votaram por sair e 48,1% por permanecer","70% votaram por sair e 30% por permanecer","48,1% por sair e 51,9% por permanecer","Empate de 50% a 50%"],"A diferença foi pequena."],
+["Brexit","Onde a maioria votou por permanecer na União Europeia?",["Londres, Escócia e Irlanda do Norte","País de Gales e interior da Inglaterra","Somente na Inglaterra","Em nenhum lugar"],"Isso pode reacender movimentos separatistas na Escócia e na Irlanda do Norte."],
+["Brexit","Os defensores do Brexit diziam que a economia britânica era prejudicada pelo euro e pela imigração. Qual é a crítica do livro a isso?",["O Reino Unido não usa o euro e não faz parte do Acordo de Schengen","O Reino Unido usava o euro desde 1992","O Reino Unido já tinha saído da UE em 1992","Não houve imigração para o Reino Unido"],"Por isso os argumentos podem ser refutados. A campanha usou argumentos nacionalistas e xenófobos."],
+
+["Separatismos","O que é uma nação?",["Grupo de pessoas que se reconhece como o mesmo povo, ligado por idioma, cultura, tradições e história","Um território com fronteiras definidas e governo","Um governo escolhido por eleição","Um grupo de países com a mesma moeda"],"Nação é o povo; Estado é a organização política do território. Não confunda."],
+["Separatismos","Qual atentado terrorista teve o maior número de mortos entre os citados na apostila?",["Madri, 2004 (191 mortos)","Londres, 2005 (52 mortos)","Bruxelas, 2016 (32 mortos)","Barcelona, 2017 (16 mortos)"],"Madri (2004): explosões em trens, reivindicadas pela Al-Qaeda."],
+["Separatismos","O que significa o nome “Iugoslávia” e por que foi usado a partir de 1929?",["“Terra dos eslavos do sul”, para criar uma identidade nacional e esconder as diferenças entre os povos","“Terra dos católicos”, para fortalecer a Igreja","“Terra do petróleo”, para atrair investimentos","“Terra dos muçulmanos”, para unir os bósnios"],"Foi o rei Alexander quem deu o nome."],
+["Separatismos","Quem governou a Iugoslávia até 1980 e a manteve unida com ditadura, socialismo e autonomia regional?",["Josip Broz Tito","Slobodan Milosevic","Francisco Franco","Abu Bakr al-Baghdadi"],"Depois da morte de Tito (1980), as disputas voltaram e vieram as guerras a partir de 1991."],
+["Separatismos","A Guerra da Bósnia (1992–1995) deixou cerca de…",["200 mil mortes e quase 2 milhões de refugiados","20 mil mortes e nenhum refugiado","1 milhão de mortes e 100 mil refugiados","50 mortes"],"A Bósnia queria independência e enfrentou tropas da Sérvia e depois da Croácia."],
+["Separatismos","O conflito em Kosovo (1998–1999) terminou com a intervenção de qual organização?",["OTAN","Opep","Liga Árabe","Mercosul"],"Milosevic foi o principal responsável pelas tropas sérvias na Bósnia e também em Kosovo."],
+["Separatismos","Qual é uma razão econômica para a Catalunha querer a independência?",["É a região que mais produz riqueza e tem o menor desemprego, e não quer sustentar toda a Espanha","É a região mais pobre da Espanha e quer receber ajuda","Tem as maiores reservas de petróleo da Europa","Quer entrar na OTAN"],"Razão cultural: língua catalã e governo autônomo até 1714."],
+["Separatismos","O que aconteceu no referendo de 2017 na Catalunha?",["Cerca de 90% votaram a favor, mas Madri proibiu e não reconheceu a independência","A Espanha aceitou e a Catalunha virou país","A Catalunha perdeu por pouca diferença","Não houve votação, só protestos"],"O governo central mandou tropas apreender urnas e mandou prender o líder, refugiado na Bélgica."],
+["Separatismos","O que foi o ETA?",["Grupo separatista basco que usou guerrilha, bombas e sequestros e anunciou o fim em 2018","Grupo separatista irlandês","Organização que governou a Iugoslávia","Partido político catalão"],"ETA = Euskadi Ta Askatasuna, “Pátria Basca e Liberdade”. Surgiu na década de 1950."],
+["Separatismos","O IRA lutava pela unificação de qual território com a República da Irlanda?",["Irlanda do Norte","Escócia","País de Gales","Inglaterra"],"A República da Irlanda ficou independente em 1922, mas a Irlanda do Norte continuou no Reino Unido."],
+["Separatismos","Qual foi o ataque de Anders Breivik, em 2011, na Noruega?",["Um atentado de extrema direita, motivado por xenofobia e islamofobia, com 69 mortos em um acampamento de jovens","Um atentado da Al-Qaeda no metrô","Um ataque do Estado Islâmico em Paris","Um ataque separatista do ETA"],"Mostra que o terrorismo não tem só motivação religiosa."],
+
+["Oriente Médio","Para que foi criada a Opep, em 1960?",["Para conseguir melhores preços do petróleo e decidir a produção de cada membro","Para vender armas aos países ocidentais","Para unir os países árabes contra Israel","Para fundar um banco internacional"],"Opep = Organização dos Países Exportadores de Petróleo. Iraque, Irã, Arábia Saudita, Kuwait e Venezuela estão entre os fundadores."],
+["Oriente Médio","O que é o sionismo?",["Movimento que defende um Estado nacional para o povo judeu, na Palestina","Movimento árabe contra o domínio otomano","Grupo terrorista palestino","Partido político iraniano"],"O sionismo cresceu no século XIX e foi reforçado pela perseguição aos judeus na Segunda Guerra."],
+["Oriente Médio","O que a ONU propôs em 1947 para a Palestina?",["Dividir em um Estado judeu e um Estado árabe, com Jerusalém sob controle internacional","Entregar toda a região a Israel","Entregar toda a região aos palestinos","Devolver a região ao Império Turco-Otomano"],"Em 1948 foi criado o Estado de Israel, mas o Estado palestino não foi proclamado."],
+["Oriente Médio","Qual território Israel conquistou da Síria na Guerra dos Seis Dias (1967)?",["Colinas de Golã","Península do Sinai","Faixa de Gaza","Cisjordânia"],"Sinai e Gaza vieram do Egito. A Cisjordânia veio da Jordânia. Israel também ficou com Jerusalém."],
+["Oriente Médio","O que foi acordado em Camp David (1979)?",["Israel devolveria a Península do Sinai ao Egito, e o Egito reconheceria Israel","Israel devolveria Gaza à Palestina","A Síria reconheceria Israel","A criação do Estado palestino"],"A devolução do Sinai ocorreu em 1982, com mediação dos EUA. Outros países árabes não gostaram."],
+["Oriente Médio","O que foram os Acordos de Oslo (1993–1995)?",["A OLP reconheceu Israel e abandonou a guerrilha. Israel reconheceu a OLP (ANP) e aceitou um governo palestino de transição","A divisão da Palestina pela ONU","O fim da Guerra dos Seis Dias","O tratado que criou a Opep"],"Foram mediados por Bill Clinton. O primeiro-ministro israelense Yitzhak Rabin foi morto por um radical israelense."],
+["Oriente Médio","Onde e quando começou a Primavera Árabe?",["Na Tunísia, em 17 de dezembro de 2010","No Egito, em 2013","Na Síria, em 2024","Na Líbia, em 1969"],"Mohamed Bouazizi, vendedor de frutas, ateou fogo ao corpo em protesto. Ben Ali fugiu em 14 de janeiro de 2011."],
+["Oriente Médio","O que aconteceu no Egito depois da queda de Mubarak?",["Houve eleição livre em 2012 (Mursi), mas em 2013 os militares derrubaram o governo e voltaram ao poder","O Egito virou monarquia","O Egito virou uma democracia estável","O Egito entrou em guerra com a Tunísia"],"Os protestos aconteceram na Praça Tahrir, no Cairo. O Egito voltou a ser uma ditadura militar."],
+["Oriente Médio","Por que a guerra na Síria teve fortes contornos étnico-religiosos?",["O governo era formado por minorias (alauítas, cristãos, drusos) e a maioria da população é sunita","Porque os dois lados eram da mesma religião","Porque a Síria é uma monarquia católica","Porque Israel invadiu o país em 2011"],"A guerra deixou mais de 500 mil mortos e mais de 5 milhões de refugiados. Em dezembro de 2024, Bashar al-Assad foi derrubado."],
+["Oriente Médio","O Estado Islâmico (ISIS) ganhou força a partir de quais conflitos?",["Guerra do Iraque (2003) e Guerra da Síria (2011)","Guerra dos Seis Dias e Guerra do Golfo","Primeira Guerra Mundial e Guerra Fria","Guerra da Bósnia e Guerra da Chechênia"],"Seu líder, Abu Bakr al-Baghdadi, se autodenominou califa e proclamou o califado em 2014."],
+["Oriente Médio","O que foi a Revolução Iraniana de 1979?",["Uma revolução liderada pelo aiatolá Khomeini, que derrubou o Xá e criou uma república islâmica","Uma revolução comunista apoiada pela URSS","Uma invasão do Iraque ao Irã","Uma revolta curda contra o Irã"],"O Irã deixou de ser aliado do Ocidente. Foram proibidos bares, músicas e roupas ocidentais."],
+["Oriente Médio","Por que o Iraque invadiu o Kuwait em 1990?",["O Kuwait vendia petróleo acima da cota da Opep, baixando os preços, e era credor do Iraque","Para libertar o Kuwait dos americanos","Porque o Kuwait atacou o Irã","Porque o Kuwait era aliado da URSS"],"Saddam Hussein queria anexar o Kuwait. A coalizão liderada pelos EUA (Guerra do Golfo) o derrotou em 1991."],
+["Oriente Médio","Como os Estados Unidos justificaram o ataque ao Iraque em 2003?",["Acusaram Saddam de abrigar terroristas e de ter armas de destruição em massa (nada comprovado)","Por ordem direta da ONU","Para devolver o Kuwait ao Iraque","Para derrubar o Xá do Irã"],"Os EUA agiram sem autorização da ONU. Saddam foi capturado em 2003 e enforcado em 2006."],
+["Oriente Médio","Por que os curdos não têm um país próprio?",["Não foi criado um Estado para eles após a Primeira Guerra, e os países onde vivem se opõem ao Curdistão","Porque não querem independência","Porque vivem só no Egito","Porque o Curdistão já existe e é reconhecido pela ONU"],"Os curdos vivem no Iraque, Irã, Armênia, Turquia e Síria. Em 1988, Halabja (maioria curda) sofreu ataques químicos."],
+["Oriente Médio","Quem voltou ao poder no Afeganistão depois da saída dos EUA em 2021?",["Os talibãs","Os mujahedins apoiados pela URSS","Os soldados da OTAN","A Al-Qaeda, sozinha"],"Os direitos das mulheres foram retirados. Metade da população enfrenta fome extrema."]
+];
+
+// Questões dissertativas: [tema, enunciado, pontos-chave da resposta, resposta modelo]
+const D = [
+["Rússia e Ucrânia","Explique por que o Mar Negro e a Crimeia são importantes para a Rússia e como isso se relaciona ao conflito na Ucrânia.",["Mar Negro: portos que não congelam, saída para o Mediterrâneo","Crimeia: portos estratégicos e gasodutos que levam gás russo à Europa","Maioria da população da Crimeia e do leste é russa","Aproximação da Ucrânia com a UE e a OTAN ameaça o interesse russo (2013–2014, 2022)"],"O Mar Negro é importante porque nele a Rússia tem portos que nunca congelam. A Crimeia dá saída para esse mar, tem portos estratégicos e gasodutos que levam gás russo para a Europa. Como muitos russos vivem lá e no leste da Ucrânia, e como a Ucrânia se aproximou da União Europeia e da OTAN, a Rússia anexou a Crimeia em 2014, apoiou os separatistas de Donetsk e invadiu o país em 2022."],
+["Catalunha","Por que a Catalunha busca a independência da Espanha? Cite uma razão histórico-cultural e uma razão econômica.",["Histórico-cultural: língua catalã, forte identidade, governo autônomo até 1714","Econômica: região mais rica e com menor desemprego","Veto de Madri a pontos do Estatuto em 2010 radicalizou o movimento","Referendo de 2017, com 90% a favor, mas não reconhecido por Madri"],"A Catalunha tem forte identidade cultural, com língua própria (catalão), e teve governo relativamente autônomo até 1714. Economicamente, é a região que mais produz riqueza e tem o menor desemprego, e os catalães não querem que isso sustente toda a Espanha. Depois que a Suprema Corte vetou pontos do Estatuto em 2010, o movimento virou separatista e fez o referendo de 2017, não reconhecido por Madri."],
+["Zona do Euro","Explique a crise da Zona do Euro: por que a Grécia virou seu símbolo e o que é austeridade.",["Euro criado em Maastricht (1992), com países muito diferentes","Crise de 2008 nos EUA agravou déficits e dívidas na Europa","Grécia escondia o déficit, a economia caiu cerca de 25% do PIB e pediu ajuda ao FMI, ao BCE e à Comissão Europeia","Austeridade: cortar gastos públicos, privatizar e demitir, o que gerou protestos"],"O euro reuniu países fortes e fracos na mesma moeda. Com a crise de 2008, que começou nos EUA, os países mais frágeis (Portugal, Itália, Irlanda, Grécia e Espanha) sofreram mais. A Grécia virou símbolo porque escondia o déficit e teve forte queda do PIB. Para ajudá-la, FMI, BCE e Comissão Europeia exigiram austeridade: cortar gastos públicos, reduzir salários e aposentadorias, privatizar empresas e demitir, o que causou protestos."],
+["Palestina","Explique a Questão da Palestina: do sionismo e do plano da ONU até os Acordos de Oslo.",["Diáspora judaica e sionismo (Estado nacional judeu na Palestina)","1947: ONU propõe dois Estados, com Jerusalém internacional; 1948: nasce Israel, o Estado palestino não","1967: Guerra dos Seis Dias, Israel ocupa Gaza, Cisjordânia, Sinai e Golã","1987: Intifada; 1993–1995: Acordos de Oslo (OLP reconhece Israel, nasce a ANP)"],"Os judeus, dispersos desde a Antiguidade (diáspora), criaram o sionismo, que defendia um Estado judeu na Palestina. Em 1947 a ONU propôs dividir a região em um Estado judeu e um árabe, com Jerusalém sob controle internacional. Em 1948 nasceu Israel, mas o Estado palestino não foi proclamado. Em 1967, na Guerra dos Seis Dias, Israel ocupou Gaza, Cisjordânia, Sinai e Golã. Os palestinos fizeram a Intifada (1987) e, em 1993–1995, os Acordos de Oslo levaram ao reconhecimento mútuo entre Israel e a OLP, que virou a Autoridade Nacional Palestina."],
+["Primavera Árabe","O que foi a Primavera Árabe? Compare o resultado em dois países (por exemplo, Tunísia e Síria).",["Levantes populares de 2010–2011 contra governos autoritários e corruptos, depois da crise de 2008","Começou na Tunísia (Bouazizi, 17/12/2010)","Tunísia: Ben Ali fugiu e hoje é democracia parlamentarista","Síria: governo de minorias, guerra civil com mais de 500 mil mortos; Assad caiu em dez/2024"],"A Primavera Árabe foi uma série de levantes populares no norte da África e no Oriente Médio em 2010 e 2011, contra governos autoritários e corruptos, em um momento de crise econômica. Começou na Tunísia, com o protesto de Mohamed Bouazizi, e derrubou Ben Ali; hoje o país é uma democracia parlamentarista. Na Síria, o governo de minorias reprimiu os protestos e o país mergulhou numa guerra civil com mais de 500 mil mortos, até a queda de Bashar al-Assad em dezembro de 2024."]
+];
+
+// ---------- utilidades ----------
+const app = document.getElementById('app');
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function shuffle(a,r){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+const LET=['A','B','C','D'];
+// monta questões com alternativas embaralhadas (sempre do mesmo jeito)
+const items = Q.map((q,i)=>{
+  const r=rng(1000+i*7);
+  const opts=shuffle(q[2].map((t,k)=>({t,ok:k===0})),r);
+  return {id:i,topic:q[0],q:q[1],opts,ex:q[3],ans:opts.findIndex(o=>o.ok)};
+});
+
+let state;
+function start(list){state={list,pos:0,hits:0,wrong:[],done:false};renderQ()}
+
+function home(){
+  app.innerHTML=`
+  <h1>Quiz de Geografia – 9º ano</h1>
+  <p class="quiet">Europa e Oriente Médio, com base na apostila.</p>
+  <div class="card">
+    <h2>Parte 1: 50 questões</h2>
+    <p>Uma pergunta por vez, 4 alternativas. Depois de cada resposta você vê na hora se acertou e por quê.</p>
+    <button class="btn" id="b1">Começar as 50 questões</button>
+    <button class="btn alt" id="b1s">Treino rápido (10 questões sortidas)</button>
+  </div>
+  <div class="card">
+    <h2>Parte 2: 5 questões dissertativas</h2>
+    <p>Escreva a resposta com suas palavras. Depois compare com os pontos-chave e a resposta modelo.</p>
+    <button class="btn alt" id="b2">Ir para as dissertativas</button>
+  </div>
+  <p class="quiet">Dica: faça em partes. Dez questões, uma pausa, mais dez.</p>`;
+  document.getElementById('b1').onclick=()=>start(items.slice());
+  document.getElementById('b1s').onclick=()=>start(shuffle(items,Math.random).slice(0,10));
+  document.getElementById('b2').onclick=()=>renderD(0);
+}
+
+function renderQ(){
+  const {list,pos}=state;
+  if(pos>=list.length) return result();
+  const it=list[pos];
+  app.innerHTML=`
+  <div class="top"><span>Questão ${pos+1} de ${list.length}</span><span>Acertos: ${state.hits}</span></div>
+  <div class="bar"><i style="width:${pos/list.length*100}%"></i></div>
+  <div class="card">
+    <span class="tag">${esc(it.topic)}</span>
+    <div class="q">${esc(it.q)}</div>
+    <div id="opts">${it.opts.map((o,k)=>`<button class="opt" data-k="${k}"><b>${LET[k]}</b><span>${esc(o.t)}</span></button>`).join('')}</div>
+    <div id="fb"></div>
+  </div>
+  <button class="btn hide" id="next">${pos+1===list.length?'Ver resultado':'Próxima'}</button>
+  <button class="btn alt" id="exit" style="background:transparent;border:0;color:var(--quiet);font-weight:500">Voltar ao início</button>`;
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.k));
+  document.getElementById('exit').onclick=home;
+  document.getElementById('next').onclick=()=>{state.pos++;renderQ();window.scrollTo(0,0)};
+}
+function answer(k){
+  const it=state.list[state.pos];
+  const ok=k===it.ans;
+  if(ok)state.hits++;else state.wrong.push(it);
+  document.querySelectorAll('.opt').forEach((b,i)=>{b.disabled=true;if(i===it.ans)b.classList.add('ok');else if(i===k)b.classList.add('bad')});
+  document.getElementById('fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><strong>${ok?'✓ Acertou!':'✗ Quase. A certa é a letra '+LET[it.ans]+'.'}</strong>${esc(it.ex)}</div>`;
+  const n=document.getElementById('next');n.classList.remove('hide');n.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function result(){
+  const total=state.list.length,h=state.hits,pct=Math.round(h/total*100);
+  const msg=pct>=80?'Muito bom! Falta só revisar o que errou.':pct>=60?'Bom caminho. Revise os erros abaixo.':'Ainda dá tempo: leia o resumo e tente de novo só com as erradas.';
+  const wrong=state.wrong;
+  app.innerHTML=`
+  <h1>Resultado</h1>
+  <div class="card"><div class="big">${h} / ${total}</div><p><b>${pct}%</b>. ${msg}</p>
+  ${wrong.length?`<button class="btn" id="redo">Refazer só as ${wrong.length} que errei</button>`:''}
+  <button class="btn alt" id="again">Voltar ao início</button></div>
+  ${wrong.length?`<div class="card"><h2>Para revisar</h2>${wrong.map(it=>`<div class="rev"><small>${esc(it.topic)}</small><p><b>${esc(it.q)}</b></p><p>✓ ${esc(it.opts[it.ans].t)}</p><p class="quiet">${esc(it.ex)}</p></div>`).join('')}</div>`:''}`;
+  if(wrong.length)document.getElementById('redo').onclick=()=>start(wrong.slice());
+  document.getElementById('again').onclick=home;
+  window.scrollTo(0,0);
+}
+
+// ---------- dissertativas ----------
+const saved={};
+function renderD(i){
+  if(i>=D.length) return doneD();
+  const d=D[i];
+  app.innerHTML=`
+  <div class="top"><span>Dissertativa ${i+1} de ${D.length}</span><span></span></div>
+  <div class="bar"><i style="width:${i/D.length*100}%"></i></div>
+  <div class="card">
+    <span class="tag">${esc(d[0])}</span>
+    <div class="q">${esc(d[1])}</div>
+    <p class="quiet">Escreva em 4 a 6 linhas, com suas palavras.</p>
+    <textarea id="ta" placeholder="Sua resposta...">${esc(saved[i]||'')}</textarea>
+    <button class="btn" id="show">Ver pontos-chave e resposta modelo</button>
+    <div id="mod" class="hide">
+      <div class="model"><b>Você falou de…?</b>
+        ${d[2].map((p,k)=>`<label class="chk"><input type="checkbox"><span>${esc(p)}</span></label>`).join('')}
+      </div>
+      <div class="model"><b>Resposta modelo</b><p>${esc(d[3])}</p></div>
+    </div>
+  </div>
+  <div class="row"><button class="btn alt" id="prev" ${i===0?'disabled':''}>Anterior</button><button class="btn" id="nx">${i===D.length-1?'Concluir':'Próxima'}</button></div>
+  <button class="btn alt" id="exit" style="background:transparent;border:0;color:var(--quiet);font-weight:500">Voltar ao início</button>`;
+  const ta=document.getElementById('ta');
+  ta.oninput=()=>saved[i]=ta.value;
+  document.getElementById('show').onclick=()=>{document.getElementById('mod').classList.remove('hide');document.getElementById('show').classList.add('hide')};
+  document.getElementById('prev').onclick=()=>renderD(i-1);
+  document.getElementById('nx').onclick=()=>{renderD(i+1);window.scrollTo(0,0)};
+  document.getElementById('exit').onclick=home;
+}
+function doneD(){
+  app.innerHTML=`<h1>Dissertativas concluídas</h1><div class="card"><p>Bom trabalho! Se algum ponto-chave ficou de fora, releia essa parte do resumo.</p><button class="btn" id="h">Voltar ao início</button></div>`;
+  document.getElementById('h').onclick=home;
+}
+home();
+</script>
+</body>
+</html>
